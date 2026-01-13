@@ -13,7 +13,7 @@ const papers = {
 
 let items = "";
 for (const [title, slug] of Object.entries(papers)) {
-  const img = `https://protoselidaefimeridon.gr/efimerides/${dd}${mm}${yy}/${slug}.JPG`;
+  const img = `https://www.protoselidaefimeridon.gr/efimerides/${dd}${mm}${yy}/${slug}.JPG`;
   items += `
 <item>
 <title>${title} – ${dd}/${mm}/${yy}</title>
