@@ -10,8 +10,8 @@ const dateObj = new Date();
 const dd = String(dateObj.getDate()).padStart(2, "0");
 const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
 const yy = String(dateObj.getFullYear()).slice(-2);
-const todayStr = `${dd}${mm}${yy}`;         
-const todayDisplay = `${dd}/${mm}/${dateObj.getFullYear()}`;
+const todayStr = "260113";  // για δοκιμή
+const todayDisplay = "26/01/2026";
 
 // Όλες οι εφημερίδες και τα slugs τους
 const papers = {
