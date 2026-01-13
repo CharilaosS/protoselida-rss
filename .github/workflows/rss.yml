@@ -1,0 +1,20 @@
+name: Daily RSS Update
+
+on:
+  schedule:
+    - cron: "5 5 * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: node generate.js
+      - run: |
+          git config user.name "rss-bot"
+          git config user.email "bot@github.com"
+          git add rss.xml
+          git commit -m "Daily RSS update" || echo "No changes"
+          git push
