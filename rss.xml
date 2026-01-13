@@ -5,26 +5,8 @@
 <link>https://protoselidaefimeridon.gr</link>
 <description>Ημερήσια πρωτοσέλιδα</description>
 
-<item>
-<title>Δημοκρατία – 13/01/26</title>
-<link>https://www.protoselidaefimeridon.gr/efimerides/260113/dimokratia.JPG</link>
-<description><![CDATA[
-<img src="https://www.protoselidaefimeridon.gr/efimerides/260113/dimokratia.JPG" />
-]]></description>
-</item>
-<item>
-<title>Καθημερινή – 13/01/26</title>
-<link>https://www.protoselidaefimeridon.gr/efimerides/260113/kathimerini.JPG</link>
-<description><![CDATA[
-<img src="https://www.protoselidaefimeridon.gr/efimerides/260113/kathimerini.JPG" />
-]]></description>
-</item>
-<item>
-<title>Τα Νέα – 13/01/26</title>
-<link>https://www.protoselidaefimeridon.gr/efimerides/260113/ta_nea.JPG</link>
-<description><![CDATA[
-<img src="https://www.protoselidaefimeridon.gr/efimerides/260113/ta_nea.JPG" />
-]]></description>
-</item>
+
+
+
 </channel>
 </rss>
