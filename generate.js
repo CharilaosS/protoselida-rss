@@ -5,14 +5,6 @@ const https = require("https");
 // Αρχείο RSS
 const rssFile = path.join(__dirname, "rss.xml");
 
-// Σημερινή ημερομηνία
-const dateObj = new Date();
-const dd = String(dateObj.getDate()).padStart(2, "0");
-const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-const yy = String(dateObj.getFullYear()).slice(-2);
-const todayStr = "260113";  // για δοκιμή
-const todayDisplay = "26/01/2026";
-
 // Όλες οι εφημερίδες και τα slugs τους
 const papers = {
   "Καθημερινή": "kathimerini",
@@ -42,14 +34,29 @@ function checkImage(url) {
   });
 }
 
+// Helper: generate array of last N dates as ddmmyy
+function getLastNDates(n) {
+  const dates = [];
+  const now = new Date();
+  for (let i=0; i<n; i++) {
+    const d = new Date(now.getTime() - i*24*60*60*1000);
+    const dd = String(d.getDate()).padStart(2,"0");
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const yy = String(d.getFullYear()).slice(-2);
+    const display = `${dd}/${mm}/${d.getFullYear()}`;
+    dates.push({ urlPart: `${dd}${mm}${yy}`, display });
+  }
+  return dates;
+}
+
 // Διαβάζουμε παλιό RSS και κρατάμε μέχρι 6 προηγούμενες μέρες
 let oldItems = [];
-let existingUrls = new Set(); // για skip του checkImage
+let existingUrls = new Set();
 if (fs.existsSync(rssFile)) {
   const content = fs.readFileSync(rssFile, "utf8");
   const itemsMatch = content.match(/<item>[\s\S]*?<\/item>/g);
   if (itemsMatch) {
-    const cutoff = new Date(dateObj.getTime() - 6*24*60*60*1000); // 6 μέρες πίσω
+    const cutoff = new Date(Date.now() - 6*24*60*60*1000);
     oldItems = itemsMatch.filter(item => {
       const dateMatch = item.match(/<title>.* – (\d+)\/(\d+)\/(\d+)<\/title>/);
       if (!dateMatch) return false;
@@ -58,7 +65,6 @@ if (fs.existsSync(rssFile)) {
       return itemDate >= cutoff;
     });
 
-    // Συλλέγουμε URLs για ήδη υπάρχουσες εικόνες
     oldItems.forEach(item => {
       const linkMatch = item.match(/<link>(.*?)<\/link>/);
       if (linkMatch) existingUrls.add(linkMatch[1]);
@@ -66,34 +72,38 @@ if (fs.existsSync(rssFile)) {
   }
 }
 
-// Δημιουργούμε νέα items για σήμερα
+// Δημιουργούμε νέα items για σήμερα/πιο πρόσφατα
 async function createRSS() {
   let newItems = "";
 
+  const last7Dates = getLastNDates(7); // δοκιμάζουμε 7 τελευταίες μέρες για κάθε εφημερίδα
+
   for (const [title, slug] of Object.entries(papers)) {
-    const imgUrl = `https://protoselidaefimeridon.gr/efimerides/${todayStr}/${slug}.JPG`;
-
-    // Skip αν υπάρχει ήδη στο ιστορικό
-    if (existingUrls.has(imgUrl)) {
-      newItems += oldItems.find(i => i.includes(imgUrl)) + "\n";
-      continue;
-    }
-
-    // Έλεγχος αν η εικόνα υπάρχει στο server
-    const exists = await checkImage(imgUrl);
-    if (!exists) continue;
-
-    newItems += `
+    let found = false;
+    for (const {urlPart, display} of last7Dates) {
+      const imgUrl = `https://protoselidaefimeridon.gr/efimerides/${urlPart}/${slug}.JPG`;
+      if (existingUrls.has(imgUrl)) {
+        newItems += oldItems.find(i=>i.includes(imgUrl)) + "\n";
+        found = true;
+        break;
+      }
+      const exists = await checkImage(imgUrl);
+      if (exists) {
+        newItems += `
 <item>
-<title>${title} – ${todayDisplay}</title>
+<title>${title} – ${display}</title>
 <link>${imgUrl}</link>
 <description><![CDATA[
 <img src="${imgUrl}" style="max-width:100%;" />
 ]]></description>
 </item>`;
+        found = true;
+        break;
+      }
+    }
+    // Αν δεν βρέθηκε εικόνα σε 7 μέρες, skip
   }
 
-  // Νέο RSS: νέα items πάνω από παλιά (χωρίς duplicates)
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
