@@ -26,12 +26,15 @@ const papers = {
   "Ελεύθερη Ωρα": "eleftheriora"
 };
 
-// Helper για έλεγχο αν υπάρχει εικόνα
+// Helper για έλεγχο αν υπάρχει εικόνα (timeout 15s)
 function checkImage(url) {
   return new Promise(resolve => {
-    https.request(url, { method: "HEAD" }, res => {
+    const req = https.request(url, { method: "HEAD", timeout: 15000 }, res => {
       resolve(res.statusCode === 200);
-    }).on("error", () => resolve(false)).end();
+    });
+    req.on("timeout", () => { req.destroy(); resolve(false); });
+    req.on("error", () => resolve(false));
+    req.end();
   });
 }
 
