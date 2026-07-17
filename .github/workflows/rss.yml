@@ -2,7 +2,7 @@ name: Daily RSS Update
 
 on:
   schedule:
-    - cron: "45 4 * * *"  # 06:45 EET
+    - cron: "3 4 * * *"  # 07:03 EEST (04:03 UTC) — therini ora
   workflow_dispatch:
 
 jobs:
