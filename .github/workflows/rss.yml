@@ -2,7 +2,7 @@ name: Daily RSS Update
 
 on:
   schedule:
-    - cron: "3 4 * * *"  # 07:03 EEST (04:03 UTC) — therini ora
+    - cron: "47 3 * * *"  # 06:47 EEST (03:47 UTC) — backup; kyrio trigger apo launchd sto Mac stis 07:00
   workflow_dispatch:
 
 jobs:
